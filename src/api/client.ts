@@ -14,9 +14,9 @@ class MindbodyApiClient {
       timeout: 30000,
     });
 
-    // Add request interceptor to add auth headers
+    // Add request interceptor to add base headers (Api-Key + SiteId)
     this.client.interceptors.request.use(async (config) => {
-      const headers = await mindbodyAuth.getAuthHeaders();
+      const headers = mindbodyAuth.getHeaders();
       Object.assign(config.headers, headers);
       return config;
     });
@@ -25,12 +25,6 @@ class MindbodyApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401) {
-          // Token might be expired, force refresh
-          const headers = await mindbodyAuth.getAuthHeaders();
-          Object.assign(error.config.headers, headers);
-          return this.client.request(error.config);
-        }
         throw error;
       }
     );

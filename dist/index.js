@@ -30903,16 +30903,11 @@ class MindbodyApiClient {
       timeout: 30000
     });
     this.client.interceptors.request.use(async (config) => {
-      const headers = await mindbodyAuth.getAuthHeaders();
+      const headers = mindbodyAuth.getHeaders();
       Object.assign(config.headers, headers);
       return config;
     });
     this.client.interceptors.response.use((response) => response, async (error) => {
-      if (error.response?.status === 401) {
-        const headers = await mindbodyAuth.getAuthHeaders();
-        Object.assign(error.config.headers, headers);
-        return this.client.request(error.config);
-      }
       throw error;
     });
   }
